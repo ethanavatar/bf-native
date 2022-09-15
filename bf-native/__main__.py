@@ -5,7 +5,7 @@ from fileinput import filename
 
 if __name__ == "__main__":
     import sys
-    from bf import brainfuck, main
+    from bf import run
     args = sys.argv[1:]
     if len(args) != 2:
         print("Usage: bf.py <file> <output>")
@@ -16,7 +16,6 @@ if __name__ == "__main__":
     program = ''
     with open(fname, 'r') as f:
         program = f.read()
-    instructions = brainfuck(program)
-    bytecode = main(instructions)
+    bytecode = run(program)
     with open(out, 'w') as f:
         f.write(bytecode)
