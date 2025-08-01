@@ -16,6 +16,7 @@ class inst(enum.Enum):
 i8 = ir.IntType(8)
 i32 = ir.IntType(32)
 voidptr_type = i8.as_pointer()
+zero = ir.Constant(i8, 0)
 
 def get_pointer_to_array_index(builder: ir.IRBuilder, array: ir.PointerType, index: ir.GlobalVariable):
     return builder.gep(array, [builder.load(index)])
@@ -29,23 +30,23 @@ def run(program : str):
 
     mod = ir.Module()
     
-    index_var = ir.GlobalVariable(mod, ir.IntType(32), name='index')
-    index_var.initializer = ir.Constant(ir.IntType(32), 0)
+    index_var = ir.GlobalVariable(mod, i32, name='index')
+    index_var.initializer = ir.Constant(i32, 0)
 
     tape_type = ir.ArrayType(ir.IntType(8), 30_000)
     tape: ir.GlobalVariable = ir.GlobalVariable(mod, tape_type, name="tape")
     tape.initializer = ir.Constant(tape_type, [0] * 30_000)
 
     # Declare printf
-    printf_type = ir.FunctionType(ir.IntType(32), [voidptr_type], var_arg=True)
+    printf_type = ir.FunctionType(i32, [voidptr_type], var_arg=True)
     printf = ir.Function(mod, printf_type, name="printf")
 
     # Declare scanf
-    scanf_type = ir.FunctionType(ir.IntType(32), [voidptr_type, voidptr_type], var_arg=True)
+    scanf_type = ir.FunctionType(i32, [voidptr_type, voidptr_type], var_arg=True)
     scanf = ir.Function(mod, scanf_type, name="scanf")
 
     # Declare putchar
-    putchar_type = ir.FunctionType(ir.IntType(32), [i8], var_arg=True)
+    putchar_type = ir.FunctionType(i32, [i8], var_arg=True)
     putchar = ir.Function(mod, putchar_type, name="putchar")
 
     # Create an entry function
@@ -58,9 +59,6 @@ def run(program : str):
 
     loop_start = None
     loop_end = None
-    branch = None
-
-    zero = ir.Constant(i8, 0)
 
     i = 0
     while i < len(program):
